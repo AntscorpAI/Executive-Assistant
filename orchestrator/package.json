@@ -1,0 +1,19 @@
+{
+  "name": "orchestrator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sage:mcp": "node ./sage-mcp-server.mjs",
+    "sage:mcp:check": "node --check ./sage-mcp-server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "openclaw": "^2026.5.28",
+    "zod": "^4.4.3"
+  }
+}

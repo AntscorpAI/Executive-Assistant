@@ -1,0 +1,21 @@
+.DS_Store
+.env
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+dist/
+build/
+data/postgres/
+data/qdrant/
+backend/.pytest_cache/
+frontend/.vite/
+
+# Local OpenClaw workspace metadata
+orchestrator/workspace/.git.nested.backup/
+orchestrator/workspace/.openclaw/

@@ -1,0 +1,46 @@
+iso_9001:
+  title: ISO 9001 Quality Management System
+  required_documents:
+    - Quality manual
+    - Scope statement
+    - Management review minutes
+    - Internal audit schedule
+    - Corrective action log
+  client_message: Please prepare the ISO 9001 documents listed in the checklist.
+
+iso_14001:
+  title: ISO 14001 Environmental Management System
+  required_documents:
+    - Environmental policy
+    - Aspect-impact register
+    - Compliance obligations register
+    - Emergency response plan
+  client_message: Please prepare the ISO 14001 documents listed in the checklist.
+
+iso_27001:
+  title: ISO 27001 Information Security Management System
+  required_documents:
+    - Risk treatment plan
+    - Statement of applicability
+    - Asset inventory
+    - Access control policy
+    - Incident log
+  client_message: Please prepare the ISO 27001 documents listed in the checklist.
+
+iso_45001:
+  title: ISO 45001 Occupational Health and Safety Management System
+  required_documents:
+    - OH&S policy
+    - Hazard identification register
+    - Incident records
+    - Emergency drills evidence
+  client_message: Please prepare the ISO 45001 documents listed in the checklist.
+
+iso_42001:
+  title: ISO 42001 Artificial Intelligence Management System
+  required_documents:
+    - AI policy
+    - AI risk assessment
+    - AI lifecycle controls
+    - Model monitoring evidence
+  client_message: Please prepare the ISO 42001 documents listed in the checklist.
