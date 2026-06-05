@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LLM_HOST_ALIAS="${1:-llm-server-macbook-pro}"
+LLM_HOST_ALIAS="${1:-sage-llm-host}"
 LLM_SSH_USER="${2:-}"
-LLM_HOST_IP="${3:-100.70.5.76}"
+LLM_HOST_IP="${3:-127.0.0.1}"
 
 SSH_TARGET="$LLM_HOST_ALIAS"
 if [[ -n "$LLM_SSH_USER" ]]; then
@@ -23,7 +23,7 @@ ssh "$SSH_TARGET" "
     elif [[ -x /Applications/Ollama.app/Contents/Resources/ollama ]]; then
       OLLAMA_BIN=/Applications/Ollama.app/Contents/Resources/ollama
     else
-      echo 'ERROR: ollama binary not found on MacBook host'
+      echo 'ERROR: ollama binary not found on the remote macOS host'
       exit 1
     fi
   fi

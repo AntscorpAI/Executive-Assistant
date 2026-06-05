@@ -6,6 +6,7 @@ pydantic-settings==2.6.1
 pydantic==2.10.3
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==3.2.2
 httpx==0.28.1
 qdrant-client==1.12.1
 PyYAML==6.0.2

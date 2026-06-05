@@ -4,7 +4,7 @@ Sage AI is a self-hosted executive assistant for ISO auditing firms. It centrali
 
 ## Architecture
 
-Sage AI uses a small, service-oriented monorepo designed to run on a Mac mini with 16 GB RAM:
+Sage AI uses a small, service-oriented monorepo designed to run on a dedicated Mac host or other always-on machine:
 
 - Backend API: FastAPI + SQLAlchemy + PostgreSQL
 - AI orchestration: LangGraph-ready service layer with Ollama first and Claude fallback
@@ -71,7 +71,7 @@ docker compose up --build
 - API docs: `http://localhost:8000/docs`
 - Admin dashboard: `http://localhost:5173`
 
-## Setup on Mac mini
+## Setup on the Primary Host
 
 ### Ollama
 
@@ -82,57 +82,52 @@ ollama pull llama3.1:8b
 ollama pull nomic-embed-text
 ```
 
-If you have room and need better quality, you can later switch to a larger quantized model. For a 16 GB Mac mini, start small and monitor memory pressure.
+If you have room and need better quality, you can later switch to a larger quantized model. For a laptop host, start small and monitor memory pressure before moving up to larger models.
 
 ### Tailscale-connected hosts
 
 Sage AI can point to services on other machines over Tailscale.
 
-- Ubuntu2: run the database stack in Docker and expose only the service ports over the Tailnet.
-- MacBook Pro: run native Ollama and expose the Ollama HTTP API over the Tailnet.
+- Remote data host: run PostgreSQL and Qdrant where you want persistent data to live.
+- Remote Ollama host: run native Ollama and expose the HTTP API over the Tailnet.
 
 Recommended environment settings:
 
-- `DATABASE_URL_REMOTE`: PostgreSQL connection string using the Ubuntu2 Tailscale IP or MagicDNS name
+- `DATABASE_URL_REMOTE`: PostgreSQL connection string using the remote database host name or IP
 - `OLLAMA_URL`: primary HTTP endpoint (CB-Portal style)
-- `OLLAMA_BASE_URL_REMOTE`: Ollama base URL on the MacBook Pro
+- `OLLAMA_BASE_URL_REMOTE`: Ollama base URL on the remote Ollama host
 - `OLLAMA_CHAT_MODEL_REMOTE`: the Ollama model to prefer remotely, such as `mistral`
 - `DEFAULT_LLM_PROVIDER`: keep `ollama` during local development, switch to a remote profile when needed
 
 If you want Sage AI to use the remote stack by default, I can add a profile switch so the backend reads the remote URLs automatically.
 
-Current assigned hosts:
-
-- Ubuntu2: `100.98.104.84`
-- MacBook Pro Ollama: `100.70.5.76`
-
 ### HTTP-only via Tailscale for Ollama
 
 This project now supports the hostname-based HTTP-only pattern:
 
-- Ollama endpoint: `http://llm-server-macbook-pro:11434`
-- Docker backend includes a host mapping for `llm-server-macbook-pro -> 100.70.5.76`
+- Ollama endpoint: `http://sage-llm-host:11434`
+- Docker backend can map `OLLAMA_REMOTE_HOST_ALIAS -> OLLAMA_REMOTE_HOST_IP` for container-to-host access
 
-To configure native Ollama on the MacBook for HTTP over Tailnet:
+To configure native Ollama on a remote macOS host for HTTP over Tailnet:
 
 ```bash
-bash scripts/remote/configure_macos_ollama_http.sh llm-server-macbook-pro
+bash scripts/remote/configure_macos_ollama_http.sh sage-llm-host
 ```
 
 If the alias user is wrong, pass the explicit macOS short username:
 
 ```bash
-bash scripts/remote/configure_macos_ollama_http.sh llm-server-macbook-pro <mac-short-username> 100.70.5.76
+bash scripts/remote/configure_macos_ollama_http.sh sage-llm-host <mac-short-username> <tailscale-ip-or-name>
 ```
 
-Important: the Tailscale device name is not always the SSH username. On the MacBook, run `id -un` to get the correct short username.
+Important: the Tailscale device name is not always the SSH username. On the macOS Ollama host, run `id -un` to get the correct short username.
 
 This uses a launchd agent (`com.ollama.server.plist`) with `OLLAMA_HOST=0.0.0.0:11434` so the HTTP endpoint survives reboot.
 
 To verify endpoint and model response:
 
 ```bash
-bash scripts/remote/verify_llm_http.sh 100.70.5.76
+bash scripts/remote/verify_llm_http.sh <tailscale-ip-or-name>
 ```
 
 Sage API health now reports Ollama status, pulled models, and whether the configured chat model is available.
@@ -145,10 +140,10 @@ Sage API health now reports Ollama status, pulled models, and whether the config
 cp .env.remote.example .env
 ```
 
-2. Deploy the Ubuntu2 containers once SSH trust is configured:
+2. Deploy the remote data containers once SSH trust is configured:
 
 ```bash
-bash scripts/remote/deploy_ubuntu2_stack.sh 100.98.104.84 vishnu
+bash scripts/remote/deploy_ubuntu2_stack.sh <db-host-or-ip> <ssh-user>
 ```
 
 This creates a new isolated Docker project (`sage_ai_new`) with new containers and a fresh PostgreSQL database (`sage_new`) instead of reusing existing containers.
@@ -156,7 +151,7 @@ This creates a new isolated Docker project (`sage_ai_new`) with new containers a
 3. Check end-to-end connectivity:
 
 ```bash
-bash scripts/remote/check_connectivity.sh 100.98.104.84 100.70.5.76
+bash scripts/remote/check_connectivity.sh <db-host-or-ip> <ollama-host-or-ip>
 ```
 
 ### Stop repeated password prompts
@@ -164,25 +159,25 @@ bash scripts/remote/check_connectivity.sh 100.98.104.84 100.70.5.76
 1. Set up SSH client config and multiplexing aliases:
 
 ```bash
-LLM_USER=<mac-short-username> bash scripts/remote/setup_ssh_config.sh
+DB_HOST_NAME=<db-host-or-ip> DB_HOST_USER=<ssh-user> LLM_HOST_NAME=<ollama-host-or-ip> LLM_USER=<mac-short-username> bash scripts/remote/setup_ssh_config.sh
 ```
 
-2. Install your local public key to Ubuntu2 (one password prompt expected):
+2. Install your local public key to the remote data host (one password prompt expected):
 
 ```bash
-bash scripts/remote/setup_passwordless_ssh.sh 100.98.104.84 vishnu
+bash scripts/remote/setup_passwordless_ssh.sh <db-host-or-ip> <ssh-user>
 ```
 
-3. Optional: install key on MacBook Pro as well after sharing the SSH username:
+3. Optional: install the key on the remote macOS Ollama host as well after sharing the SSH username:
 
 ```bash
-bash scripts/remote/setup_passwordless_ssh.sh 100.70.5.76 <macbook-ssh-username>
+bash scripts/remote/setup_passwordless_ssh.sh <ollama-host-or-ip> <mac-ssh-username>
 ```
 
-If your SSH alias is configured as `llm-server-macbook-pro`, use:
+If your SSH alias is configured as `sage-llm-host`, use:
 
 ```bash
-ssh llm-server-macbook-pro
+ssh sage-llm-host
 ```
 
 After this, deployment commands should stop asking for passwords repeatedly.
@@ -195,7 +190,7 @@ docker compose up --build
 
 ### Notes for remote Ollama models
 
-Set `OLLAMA_CHAT_MODEL_REMOTE` to one of your installed models on the MacBook Pro, for example:
+Set `OLLAMA_CHAT_MODEL_REMOTE` to one of your installed models on the remote Ollama host, for example:
 
 - `mistral-small`
 - `mistral-nemo`
@@ -236,6 +231,14 @@ iso_9001:
 - Actions are written to an audit log.
 - External providers are optional and adapter-based.
 
+## Always-On Host
+
+This laptop is configured to stay awake on AC power with sleep disabled.
+
+To start the assistant stack automatically on login or reboot, load the launch agent in [launchd/com.sage.ai.stack.plist](launchd/com.sage.ai.stack.plist).
+
+Current macOS power state is already set to `sleep 0` for AC and battery, with `displaysleep` left enabled so the screen can turn off while the machine stays awake.
+
 ## First Milestone
 
 The initial production slice includes:
@@ -258,14 +261,19 @@ After the bootstrap is running, the next hardening pass is usually:
 4. Load ISO document sets into the vector index.
 5. Tune reminder schedules and escalation rules.
 
-## What I Need From You
+## Current Migration Snapshot
 
-To finish the Ubuntu2 and MacBook Pro wiring, send me:
+The live Mac mini deployment that is being retired currently runs:
 
-1. The Tailscale names or IPs for Ubuntu2 and the MacBook Pro.
-2. Whether Ubuntu2 should host PostgreSQL only, or PostgreSQL plus Qdrant and any other services.
-3. The database names, usernames, and passwords you want used in the new Docker container.
-4. Whether the MacBook Pro should expose only Ollama, or also embeddings and any local file paths.
-5. The preferred Ollama model names to install on the MacBook Pro beyond `mistral`.
-6. Whether you want the app to default to the remote stack or keep local-first with a manual switch.
+- `nginx` as the single public entry point on port 80
+- `backend` as the FastAPI API service
+- `frontend` as the Vite dashboard service
+- `postgres` for application data
+- `qdrant` for document retrieval
+- `waha` for the WhatsApp gateway
+- Ollama on a separate Tailnet host at `llm-server`
+
+The Mac mini itself is reachable over Tailscale as `vishnus-mac-mini`, and passwordless SSH from this laptop is already configured.
+
+The migration artifacts from the Mac mini are stored under [migration/mac-mini](migration/mac-mini).
 

@@ -15,6 +15,8 @@ data/postgres/
 data/qdrant/
 backend/.pytest_cache/
 frontend/.vite/
+logs/
+migration/
 
 # Local OpenClaw workspace metadata
 orchestrator/workspace/.git.nested.backup/

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-UBUNTU2_USER="${UBUNTU2_USER:-vishnu}"
-LLM_USER="${LLM_USER:-sanjay}"
+DB_HOST_ALIAS="${DB_HOST_ALIAS:-sage-db-host}"
+DB_HOST_NAME="${DB_HOST_NAME:-remote-db-host}"
+DB_HOST_USER="${DB_HOST_USER:-sage}"
+LLM_HOST_ALIAS="${LLM_HOST_ALIAS:-sage-llm-host}"
+LLM_HOST_NAME="${LLM_HOST_NAME:-remote-ollama-host}"
+LLM_USER="${LLM_USER:-$USER}"
 
 mkdir -p "$HOME/.ssh/controlmasters"
 mkdir -p "$HOME/.ssh"
@@ -36,9 +40,8 @@ EOF
 touch "$CONFIG_FILE"
 chmod 600 "$CONFIG_FILE"
 
-ensure_block "ubuntu2" "100.98.104.84" "$UBUNTU2_USER"
-ensure_block "llm-mbp" "100.70.5.76" "$LLM_USER"
-ensure_block "llm-server-macbook-pro" "100.70.5.76" "$LLM_USER"
+ensure_block "$DB_HOST_ALIAS" "$DB_HOST_NAME" "$DB_HOST_USER"
+ensure_block "$LLM_HOST_ALIAS" "$LLM_HOST_NAME" "$LLM_USER"
 
 echo "SSH config updated at $CONFIG_FILE"
-echo "Use aliases: ssh ubuntu2, ssh llm-mbp, ssh llm-server-macbook-pro"
+echo "Use aliases: ssh ${DB_HOST_ALIAS}, ssh ${LLM_HOST_ALIAS}"

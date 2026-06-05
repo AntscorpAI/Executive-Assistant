@@ -83,7 +83,7 @@ export default function App() {
         <div className="statusCard">
           <span className="statusLabel">System status</span>
           <strong>{status}</strong>
-          <p>Self-hosted, private, and ready for Mac mini deployment.</p>
+          <p>Self-hosted, private, and ready for an always-on laptop or desktop host.</p>
         </div>
       </aside>
 

@@ -5,8 +5,8 @@
 - Sage API base: http://127.0.0.1:8000/api
 - OpenClaw gateway: ws://127.0.0.1:19001
 - OpenClaw dashboard: http://127.0.0.1:19001/
-- Remote Ollama: http://100.70.5.76:11434
-- Default model: ollama-remote/mistral-nemo
+- Ollama endpoint: http://127.0.0.1:11434 or your configured remote host
+- Default model: ollama/llama3.1:8b locally, or your configured remote model
 
 ## MCP Bridge
 

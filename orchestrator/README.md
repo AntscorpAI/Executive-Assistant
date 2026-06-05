@@ -7,8 +7,8 @@ This folder runs OpenClaw as the orchestration layer for Sage.
 - Profile: `sage`
 - Gateway: `ws://127.0.0.1:19001`
 - Dashboard: `http://127.0.0.1:19001/`
-- Default model: `ollama-remote/mistral-nemo`
-- Ollama endpoint: `http://100.70.5.76:11434`
+- Default model: `ollama/llama3.1:8b` locally, or your configured remote Ollama model
+- Ollama endpoint: `http://127.0.0.1:11434` locally, or your configured remote Ollama host
 
 ## Start and Verify
 

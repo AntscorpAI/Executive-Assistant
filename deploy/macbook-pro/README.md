@@ -1,4 +1,4 @@
-# MacBook Pro Ollama Host
+# macOS Ollama Host
 
 This host runs native Ollama and serves Sage AI models over Tailscale.
 
@@ -9,4 +9,4 @@ This host runs native Ollama and serves Sage AI models over Tailscale.
 
 ## Usage
 
-Run Ollama locally and expose the API to the Tailnet. Point Sage AI to the Tailscale address via `OLLAMA_BASE_URL_REMOTE`.
+Run Ollama locally and expose the API to the Tailnet. Point Sage AI to the Tailscale address or SSH alias via `OLLAMA_BASE_URL_REMOTE`.

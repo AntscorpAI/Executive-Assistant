@@ -1,6 +1,6 @@
-# Ubuntu2 Database Host
+# Remote Database Host
 
-This folder contains the Docker Compose stack for the Ubuntu2 host that will be reachable over Tailscale.
+This folder contains the Docker Compose stack for a remote data host that will be reachable over Tailscale.
 
 ## Services
 
@@ -16,6 +16,6 @@ docker compose -f deploy/ubuntu2/docker-compose.yml up -d
 
 ## Tailscale Notes
 
-- Install Tailscale on Ubuntu2 and join the Tailnet.
+- Install Tailscale on the remote data host and join the Tailnet.
 - Use the Tailscale IP or MagicDNS name in the Sage AI `.env` file.
 - Keep the container ports only reachable from the Tailnet or local host firewall rules.

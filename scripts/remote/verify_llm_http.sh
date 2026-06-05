@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LLM_HOST="${1:-100.70.5.76}"
+LLM_HOST="${1:-127.0.0.1}"
 CHAT_MODEL="${2:-mistral-nemo}"
 
 echo "Checking Ollama tags endpoint on ${LLM_HOST}"
